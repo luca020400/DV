@@ -2,6 +2,7 @@ import * as d3 from "d3";
 import { sankey, sankeyLinkHorizontal } from "d3-sankey";
 
 import { createResponsiveSvg, getContainerDimensions } from '../utils/chart.js';
+import { createUnigeOrdinalScale } from '../utils/palette.js';
 
 export function renderSankeyChart(container, data, margins) {
     const { width } = getContainerDimensions(container);
@@ -52,13 +53,11 @@ export function renderSankeyChart(container, data, margins) {
     });
 
     // Create color scale for countries
-    const colorScale = d3.scaleOrdinal()
-        .domain(countries)
-        .range(d3.schemeSet3);
+    const colorScale = createUnigeOrdinalScale()
+        .domain(countries);
 
-    const eventColorScale = d3.scaleOrdinal()
-        .domain(eventTypes)
-        .range(d3.schemeSet2);
+    const eventColorScale = createUnigeOrdinalScale()
+        .domain(eventTypes);
 
     // Main group with margins
     const g = svg.append("g")
