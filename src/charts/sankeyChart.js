@@ -70,7 +70,7 @@ export function renderSankeyChart(container, data, margins) {
         })
         .attr("stroke-opacity", 0.5)
         .attr("fill", "none")
-        .attr("stroke-width", d => Math.max(2, d.width))
+        .attr("stroke-width", d => d.width)
         .attr("class", "sankey-link");
 
     // Draw nodes (rectangles)
@@ -153,7 +153,7 @@ export function renderSankeyChart(container, data, margins) {
         });
 
     // Add labels for nodes (do not capture pointer events so they don't block node mouse events)
-    const labels = g.append("g")
+    g.append("g")
         .selectAll("text")
         .data(sankeyNodes)
         .enter()
