@@ -97,3 +97,10 @@ export const hexbinMapChartMargins = new Margin({
     bottom: 20,
     left: 20
 });
+
+export const sankeyChartMargins = new Margin({
+    top: 20,
+    right: 200,
+    bottom: 20,
+    left: 200
+});

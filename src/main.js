@@ -16,7 +16,8 @@ import {
     lineChartMargins,
     geoChartMargins,
     smallMultipleGeoChartMargins,
-    hexbinMapChartMargins
+    hexbinMapChartMargins,
+    sankeyChartMargins
 } from './utils/margins.js';
 
 import { renderBarChart } from './charts/barChart.js';
@@ -32,6 +33,7 @@ import { renderLineChart } from './charts/lineChart.js';
 import { renderGeoChart } from './charts/geoChart.js';
 import { renderSmallMultipleGeoChart } from './charts/smallMultipleChart.js';
 import { renderHexbinMapChart } from './charts/hexbinMapChart.js';
+import { renderSankeyChart } from './charts/sankeyChart.js';
 
 import { initNavigation } from './utils/navigation.js';
 import { initBackToTop } from './utils/backToTop.js';
@@ -46,7 +48,8 @@ import {
     loadLineChartData,
     loadGeoChartData,
     loadSmallMultipleGeoChartData,
-    loadHexbinMapChartData
+    loadHexbinMapChartData,
+    loadSankeyChartData
 } from './data/dataLoader.js';
 
 // Initialize navigation menu
@@ -170,4 +173,13 @@ document.addEventListener('DOMContentLoaded', () => {
             hexbinMapChartMargins
         ))
         .catch(err => console.error('Hexbin map chart data failed:', err));
+
+    loadSankeyChartData()
+        .then(data => observeRender(
+            document.getElementById('sankey-chart'),
+            renderSankeyChart,
+            data,
+            sankeyChartMargins
+        ))
+        .catch(err => console.error('Sankey chart data failed:', err));
 });

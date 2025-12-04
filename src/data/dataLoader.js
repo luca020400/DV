@@ -108,3 +108,10 @@ export async function loadSmallMultipleGeoChartData() {
 export async function loadHexbinMapChartData() {
     return await d3.csv(totalEventsByLatLonYearUrl, d3.autoType);
 }
+
+export async function loadSankeyChartData() {
+    const parsed = await d3.csv(eventsByCountryEventTypeUrl, d3.autoType);
+    return parsed
+        .map(d => ({ country: d.COUNTRY, eventType: d.EVENT_TYPE, events: d.EVENTS }))
+        .sort((a, b) => a.country.localeCompare(b.country) || a.eventType.localeCompare(b.eventType));
+}
