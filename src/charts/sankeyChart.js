@@ -8,7 +8,7 @@ export function renderSankeyChart(container, data, margins) {
 
     // Clear previous content
     container.innerHTML = "";
-    
+
     // Ensure container has relative positioning for tooltips
     container.style.position = "relative";
 
@@ -17,16 +17,14 @@ export function renderSankeyChart(container, data, margins) {
 
     // Transform data into Sankey format
     // Nodes: Countries on the left, Event Types on the right
-    const countries = Array.from(new Set(data.map(d => d.country))).sort();
+    const countries = Array.from(new Set(data.map(d => d.country)));
     const eventTypes = Array.from(new Set(data.map(d => d.eventType))).sort();
-    
+
     // Calculate height based on the axis with more nodes
     const maxNodes = Math.max(countries.length, eventTypes.length);
-    const minNodeHeight = 20;
-    const nodePadding = 15;
-    
+
     // Calculate total height based on max nodes
-    const sankeyHeight = maxNodes * minNodeHeight + (maxNodes - 1) * nodePadding;
+    const sankeyHeight = Math.max(300, maxNodes * 55);
     const totalHeight = sankeyHeight + margins.top + margins.bottom;
 
     // Create the SVG with calculated height
@@ -45,9 +43,7 @@ export function renderSankeyChart(container, data, margins) {
 
     // Create Sankey generator
     const sankeyGenerator = sankey()
-        .nodeWidth(20)
-        .nodePadding(nodePadding)
-        .nodeSort(null)
+        .nodePadding(5)
         .extent([[0, 0], [innerWidth, sankeyHeight]]);
 
     const { nodes: sankeyNodes, links: sankeyLinks } = sankeyGenerator({
@@ -59,6 +55,10 @@ export function renderSankeyChart(container, data, margins) {
     const colorScale = d3.scaleOrdinal()
         .domain(countries)
         .range(d3.schemeSet3);
+
+    const eventColorScale = d3.scaleOrdinal()
+        .domain(eventTypes)
+        .range(d3.schemeSet2);
 
     // Main group with margins
     const g = svg.append("g")
@@ -94,27 +94,72 @@ export function renderSankeyChart(container, data, margins) {
             if (d.category === "country") {
                 return colorScale(d.name);
             } else {
-                return "#999";
+                return eventColorScale(d.name);
             }
         })
         .attr("opacity", 0.8)
         .style("cursor", "pointer");
 
-    // Add node hover effect
+    // selection state for filtering (either a country or an event)
+    let selectedFilter = { category: null, name: null };
+
+    // Add node hover/tooltip handlers (use mouseenter/mouseleave to avoid bubbling issues)
     nodeGroup
-        .on("mouseover", function (event, d) {
+        .on("mouseenter", function (event, d) {
             d3.select(this)
-                .attr("opacity", 1)
                 .attr("stroke", "#000")
                 .attr("stroke-width", 2);
         })
-        .on("mouseout", function (event, d) {
+        .on("mousemove", function (event, d) {
+            const [mx, my] = d3.pointer(event, container);
+            tooltip.style("display", "block")
+                .style("left", `${mx + 12}px`)
+                .style("top", `${my + 12}px`)
+                .html(`<strong>${d.name}</strong>`);
+        })
+        .on("mouseleave", function (event, d) {
             d3.select(this)
-                .attr("opacity", 0.8)
-                .attr("stroke", "none");
+                .attr("stroke", "none")
+                .attr("stroke-width", 0);
+            tooltip.style("display", "none");
+        })
+        .on("click", function (event, d) {
+            // prevent svg background handler from immediately clearing selection
+            event.stopPropagation();
+
+            const name = d.name;
+            const category = d.category; // "country" or "event"
+
+            // toggle: if same filter -> clear
+            if (selectedFilter.category === category && selectedFilter.name === name) {
+                selectedFilter = { category: null, name: null };
+                // reset link & node styles
+                linkGroup
+                    .attr("stroke-opacity", l => 0.5)
+                    .attr("opacity", 1);
+                nodeGroup.attr("opacity", 0.8);
+                return;
+            }
+
+            // set new filter
+            selectedFilter = { category, name };
+
+            if (category === "country") {
+                // highlight outgoing flows from the country
+                linkGroup
+                    .attr("stroke-opacity", l => (l.source.name === name ? 0.95 : 0.08))
+                    .attr("opacity", l => (l.source.name === name ? 1 : 0.25));
+                nodeGroup.attr("opacity", nd => (nd.category === "country" && nd.name === name ? 1 : 0.28));
+            } else if (category === "event") {
+                // highlight incoming flows to the event type
+                linkGroup
+                    .attr("stroke-opacity", l => (l.target.name === name ? 0.95 : 0.08))
+                    .attr("opacity", l => (l.target.name === name ? 1 : 0.25));
+                nodeGroup.attr("opacity", nd => (nd.category === "event" && nd.name === name ? 1 : 0.28));
+            }
         });
 
-    // Add labels for nodes
+    // Add labels for nodes (do not capture pointer events so they don't block node mouse events)
     const labels = g.append("g")
         .selectAll("text")
         .data(sankeyNodes)
@@ -127,7 +172,8 @@ export function renderSankeyChart(container, data, margins) {
         .attr("font-size", "12px")
         .attr("font-weight", "500")
         .text(d => d.name)
-        .attr("fill", "#333");
+        .attr("fill", "#333")
+        .style("pointer-events", "none");
 
     // Add tooltip
     const tooltip = d3.select(container)
@@ -141,19 +187,6 @@ export function renderSankeyChart(container, data, margins) {
         .style("font-size", "12px")
         .style("display", "none")
         .style("z-index", "1000");
-
-    // Add node tooltips
-    nodeGroup
-        .on("mousemove", function (event, d) {
-            const [mx, my] = d3.pointer(event, container);
-            tooltip.style("display", "block")
-                .style("left", `${mx + 12}px`)
-                .style("top", `${my + 12}px`)
-                .html(`<strong>${d.name}</strong>`);
-        })
-        .on("mouseout", function () {
-            tooltip.style("display", "none");
-        });
 
     // Add link tooltips
     linkGroup
@@ -169,6 +202,15 @@ export function renderSankeyChart(container, data, margins) {
         .on("mouseout", function () {
             tooltip.style("display", "none");
         });
+
+    // allow clicking background to clear selection
+    svg.on("click", () => {
+        selectedFilter = { category: null, name: null };
+        linkGroup
+            .attr("stroke-opacity", l => 0.5)
+            .attr("opacity", 1);
+        nodeGroup.attr("opacity", 0.8);
+    });
 
     // Append SVG to container
     container.appendChild(svg.node());

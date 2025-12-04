@@ -111,7 +111,29 @@ export async function loadHexbinMapChartData() {
 
 export async function loadSankeyChartData() {
     const parsed = await d3.csv(eventsByCountryEventTypeUrl, d3.autoType);
+
+    // Merge smaller Middle Eastern countries into "Middle East" including amounts
+    const countries_to_merge = [
+        "Qatar",
+        "United Arab Emirates",
+        "Bahrain",
+        "Kuwait",
+        "Jordan",
+        "Saudi Arabia",
+        "Oman",
+    ]
     return parsed
         .map(d => ({ country: d.COUNTRY, eventType: d.EVENT_TYPE, events: d.EVENTS }))
-        .sort((a, b) => a.country.localeCompare(b.country) || a.eventType.localeCompare(b.eventType));
+        .map(d => {
+            if (countries_to_merge.includes(d.country)) {
+                return { country: "Other", eventType: d.eventType, events: d.events };
+            }
+            return d;
+        })
+        .sort((a, b) => {
+            if (a.country === "Other" && b.country !== "Other") return 1;
+            if (b.country === "Other" && a.country !== "Other") return -1;
+            const c = a.country.localeCompare(b.country);
+            return c || a.eventType.localeCompare(b.eventType);
+        });
 }
