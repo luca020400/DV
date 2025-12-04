@@ -102,5 +102,5 @@ export const sankeyChartMargins = new Margin({
     top: 20,
     right: 200,
     bottom: 20,
-    left: 200
+    left: 150
 });
