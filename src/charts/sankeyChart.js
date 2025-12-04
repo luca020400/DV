@@ -5,7 +5,7 @@ import { createResponsiveSvg, getContainerDimensions } from '../utils/chart.js';
 import { createUnigeOrdinalScale } from '../utils/palette.js';
 
 export function renderSankeyChart(container, data, margins) {
-    const { width } = getContainerDimensions(container);
+    const { width, height } = getContainerDimensions(container);
 
     // Clear previous content
     container.innerHTML = "";
@@ -15,21 +15,15 @@ export function renderSankeyChart(container, data, margins) {
 
     // Inner dimensions
     const innerWidth = Math.max(100, width - margins.left - margins.right);
+    const innerHeight = Math.max(100, height - margins.top - margins.bottom);
 
     // Transform data into Sankey format
     // Nodes: Countries on the left, Event Types on the right
     const countries = Array.from(new Set(data.map(d => d.country)));
     const eventTypes = Array.from(new Set(data.map(d => d.eventType))).sort();
 
-    // Calculate height based on the axis with more nodes
-    const maxNodes = Math.max(countries.length, eventTypes.length);
-
-    // Calculate total height based on max nodes
-    const sankeyHeight = Math.max(300, maxNodes * 55);
-    const totalHeight = sankeyHeight + margins.top + margins.bottom;
-
     // Create the SVG with calculated height
-    const svg = createResponsiveSvg(width, totalHeight);
+    const svg = createResponsiveSvg(width, height);
 
     const nodes = [
         ...countries.map((c, i) => ({ id: `country-${c}`, name: c, category: "country" })),
@@ -45,7 +39,7 @@ export function renderSankeyChart(container, data, margins) {
     // Create Sankey generator
     const sankeyGenerator = sankey()
         .nodePadding(5)
-        .extent([[0, 0], [innerWidth, sankeyHeight]]);
+        .extent([[0, 0], [innerWidth, innerHeight]]);
 
     const { nodes: sankeyNodes, links: sankeyLinks } = sankeyGenerator({
         nodes: nodes.map(d => ({ ...d })),
