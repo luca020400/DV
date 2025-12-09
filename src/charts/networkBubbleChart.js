@@ -30,7 +30,7 @@ export function renderNetworkBubbleChart(container, data, margins) {
         children: countries.map(country => {
             const countryData = data.filter(d => d.country === country);
             const eventTypeMap = new Map();
-            
+
             countryData.forEach(item => {
                 if (!eventTypeMap.has(item.eventType)) {
                     eventTypeMap.set(item.eventType, 0);
@@ -50,9 +50,25 @@ export function renderNetworkBubbleChart(container, data, margins) {
         })
     };
 
-    // Create SVG with large canvas for bubble layout
-    const canvasHeight = Math.max(height, 1000);
-    const svg = createResponsiveSvg(width, canvasHeight);
+    function computeLabelStyle(radius, fillColor) {
+        if (radius < 16) {
+            return "#000000";
+        }
+
+        const c = d3.color(fillColor).rgb();
+        const r = c.r / 255, g = c.g / 255, b = c.b / 255;
+        const lin = v => v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+        const bgLum = 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b);
+
+        const contrastWithWhite = (1 + 0.05) / (bgLum + 0.05);
+        const contrastWithBlack = (bgLum + 0.05) / 0.05;
+
+        const useWhite = contrastWithWhite > contrastWithBlack;
+
+        return useWhite ? "#FFFFFF" : "#000000";
+    }
+
+    const svg = createResponsiveSvg(width, height);
 
     // Main group with margins
     const g = svg.append("g")
@@ -64,7 +80,7 @@ export function renderNetworkBubbleChart(container, data, margins) {
         .sort((a, b) => b.value - a.value);
 
     const pack = d3.pack()
-        .size([innerWidth, canvasHeight - margins.top - margins.bottom])
+        .size([innerWidth, innerHeight - margins.top - margins.bottom])
         .padding(3);
 
     const packedRoot = pack(root);
@@ -96,8 +112,8 @@ export function renderNetworkBubbleChart(container, data, margins) {
 
     // Draw country-level circles (big bubbles for states)
     const countryNodes = nodes.filter(d => d.depth === 1 && d.children);
-    
-    const countryCircles = g.selectAll(".country-circle")
+
+    g.selectAll(".country-circle")
         .data(countryNodes)
         .enter()
         .append("circle")
@@ -155,7 +171,7 @@ export function renderNetworkBubbleChart(container, data, margins) {
         })
         .on("click", function (event, d) {
             event.stopPropagation();
-            
+
             const country = d.parent.data.name;
             const category = "country";
 
@@ -194,7 +210,7 @@ export function renderNetworkBubbleChart(container, data, margins) {
         .attr("dominant-baseline", "middle")
         .attr("font-size", "10px")
         .attr("font-weight", "500")
-        .attr("fill", "#333")
+        .attr("fill", d => computeLabelStyle(d.r, eventColorScale(d.data.name)))
         .style("pointer-events", "none")
         .text(d => {
             const label = d.data.name;
