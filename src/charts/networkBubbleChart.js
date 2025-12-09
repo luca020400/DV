@@ -81,7 +81,7 @@ export function renderNetworkBubbleChart(container, data, margins) {
 
     const pack = d3.pack()
         .size([innerWidth, innerHeight - margins.top - margins.bottom])
-        .padding(3);
+        .padding(25);
 
     const packedRoot = pack(root);
     const leaves = packedRoot.leaves();
