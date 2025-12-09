@@ -43,7 +43,7 @@
                                     in space
                                 </a></li>
                             <li><a href="#section-6"
-                                    class="px-4 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-unige-blue transition-all duration-200">Sankey
+                                    class="px-4 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-unige-blue transition-all duration-200">Network
                                 </a></li>
                         </ul>
                     </div>
@@ -80,7 +80,7 @@
                                     class="block px-4 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-unige-blue transition-all duration-200">Data
                                     Viz 5</a></li>
                             <li><a href="#section-6"
-                                    class="block px-4 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-unige-blue transition-all duration-200">Sankey</a></li>
+                                    class="block px-4 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-unige-blue transition-all duration-200">Network</a></li>
                         </ul>
                     </div>
                 </div>
@@ -649,13 +649,13 @@
                     </div>
                 </section>
 
-                <!-- Section 6 - Sankey -->
+                <!-- Section 6 - Network -->
                 <section id="section-6" aria-labelledby="section-6-title"
                     class="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-gray-200 hover:shadow-xl transition-shadow duration-300">
                     <div class="flex items-center gap-3 mb-4">
                         <div class="w-1 h-8 bg-linear-to-b from-blue-500 to-purple-500 rounded-full"></div>
                         <h2 id="section-6-title" class="text-3xl font-bold text-gray-900">
-                            Section 6: Stunkey Visualization
+                            Section 6: Network Visualization
                         </h2>
                     </div>
 
@@ -668,7 +668,7 @@
                             class="bg-linear-to-br from-gray-50 to-white rounded-xl p-5 border border-gray-200 hover:border-blue-300 transition-colors duration-300">
                             <h3 class="font-semibold text-gray-900 text-lg mb-2 flex items-center gap-2">
                                 <span class="w-2 h-2 bg-blue-500 rounded-full"></span>
-                                Event Flows and Consequences
+                                Event Flows (Sankey)
                             </h3>
                             <figure class="mt-4">
                                 <div id="sankey-chart" class="h-128 w-full" role="img"
@@ -677,13 +677,29 @@
                                 </div>
                                 <figcaption class="mt-3 text-sm text-gray-600">
                                     <p>
-                                        This Sankey diagram visualizes the flow of events from different event types to their consequences across the Middle East.
+                                        This Sankey diagram visualizes the flow of events from different event types across the Middle East.
                                         The width of each flow represents the magnitude of events, helping to understand how different types of violence
-                                        relate to and influence the overall conflict landscape in the region.
+                                        relate to each other in the overall conflict landscape.
                                     </p>
-                                    <p class="mt-6">
-                                        By tracing the paths through this diagram, one can observe which event types are most common and how they contribute
-                                        to the overall pattern of violence and displacement in the Middle East.
+                                </figcaption>
+                            </figure>
+                        </article>
+                        <article
+                            class="bg-linear-to-br from-gray-50 to-white rounded-xl p-5 border border-gray-200 hover:border-blue-300 transition-colors duration-300">
+                            <h3 class="font-semibold text-gray-900 text-lg mb-2 flex items-center gap-2">
+                                <span class="w-2 h-2 bg-blue-500 rounded-full"></span>
+                                Hierarchical View (Bubble Chart)
+                            </h3>
+                            <figure class="mt-4">
+                                <div id="network-bubble-chart" class="h-192 w-full" role="img"
+                                    aria-label="Network bubble chart visualization">
+                                    <span class="sr-only">Network bubble chart visualization loading</span>
+                                </div>
+                                <figcaption class="mt-3 text-sm text-gray-600">
+                                    <p>
+                                        This bubble chart presents a hierarchical view of conflict events by country and event type.
+                                        Each bubble represents an event type within a country, with size indicating event frequency.
+                                        Click on a country to focus on that region's distribution.
                                     </p>
                                 </figcaption>
                             </figure>

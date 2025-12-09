@@ -104,3 +104,11 @@ export const sankeyChartMargins = new Margin({
     bottom: 20,
     left: 150
 });
+
+export const networkBubbleChartMargins = new Margin({
+    top: 20,
+    right: 20,
+    bottom: 20,
+    left: 20
+});
+

@@ -17,7 +17,8 @@ import {
     geoChartMargins,
     smallMultipleGeoChartMargins,
     hexbinMapChartMargins,
-    sankeyChartMargins
+    sankeyChartMargins,
+    networkBubbleChartMargins
 } from './utils/margins.js';
 
 import { renderBarChart } from './charts/barChart.js';
@@ -34,6 +35,7 @@ import { renderGeoChart } from './charts/geoChart.js';
 import { renderSmallMultipleGeoChart } from './charts/smallMultipleChart.js';
 import { renderHexbinMapChart } from './charts/hexbinMapChart.js';
 import { renderSankeyChart } from './charts/sankeyChart.js';
+import { renderNetworkBubbleChart } from './charts/networkBubbleChart.js';
 
 import { initNavigation } from './utils/navigation.js';
 import { initBackToTop } from './utils/backToTop.js';
@@ -49,7 +51,8 @@ import {
     loadGeoChartData,
     loadSmallMultipleGeoChartData,
     loadHexbinMapChartData,
-    loadSankeyChartData
+    loadSankeyChartData,
+    loadNetworkBubbleChartData
 } from './data/dataLoader.js';
 
 // Initialize navigation menu
@@ -182,4 +185,13 @@ document.addEventListener('DOMContentLoaded', () => {
             sankeyChartMargins
         ))
         .catch(err => console.error('Sankey chart data failed:', err));
+
+    loadNetworkBubbleChartData()
+        .then(data => observeRender(
+            document.getElementById('network-bubble-chart'),
+            renderNetworkBubbleChart,
+            data,
+            networkBubbleChartMargins
+        ))
+        .catch(err => console.error('Network bubble chart data failed:', err));
 });
