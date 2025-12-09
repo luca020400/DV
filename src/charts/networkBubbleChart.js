@@ -80,7 +80,7 @@ export function renderNetworkBubbleChart(container, data, margins) {
         .sort((a, b) => b.value - a.value);
 
     const pack = d3.pack()
-        .size([innerWidth, innerHeight - margins.top - margins.bottom])
+        .size([innerWidth, innerHeight])
         .padding(25);
 
     const packedRoot = pack(root);
