@@ -208,13 +208,13 @@ export function renderNetworkBubbleChart(container, data, margins) {
         .attr("y", d => d.y)
         .attr("text-anchor", "middle")
         .attr("dominant-baseline", "middle")
-        .attr("font-size", "10px")
+        .attr("font-size", "12px")
         .attr("font-weight", "500")
         .attr("fill", d => computeLabelStyle(d.r, eventColorScale(d.data.name)))
         .style("pointer-events", "none")
         .text(d => {
             const label = d.data.name;
-            return label.length > 12 ? label.slice(0, 10) + "…" : label;
+            return label.length > 10 ? label.slice(0, 8) + "…" : label;
         });
 
     // Add country labels to country groupings (larger bubbles showing aggregated country data)
