@@ -228,7 +228,7 @@ export function renderNetworkBubbleChart(container, data, margins) {
         .attr("text-anchor", "middle")
         .attr("font-size", "13px")
         .attr("font-weight", "700")
-        .attr("fill", d => countryColorScale(d.data.name))
+        .attr("fill", d => computeLabelStyle(14, countryColorScale(d.data.name)))
         .style("pointer-events", "none")
         .text(d => d.data.name);
 
